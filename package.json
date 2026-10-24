@@ -1,0 +1,20 @@
+{
+  "name": "a11y-reviewer",
+  "version": "0.1.0",
+  "description": "Scan a web page against WCAG 2.2 with axe-core, list failures by severity with plain-language fixes, and export a report.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js",
+    "postinstall": "playwright install chromium || echo 'Run: npx playwright install chromium'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axe-core": "4.14.0",
+    "express": "5.3.0",
+    "playwright": "1.63.0"
+  }
+}
