@@ -5,9 +5,11 @@ Enter a URL and it:
 
 1. Loads the page in a real headless browser (Chromium via Playwright), so JavaScript-rendered content is tested.
 2. Runs [axe-core](https://github.com/dequelabs/axe-core), the open-source accessibility engine behind Lighthouse and Accessibility Insights.
-3. Lists failures grouped by severity (critical, serious, moderate, minor), each with the WCAG criterion, a plain-language "why it matters", a "how to fix" with an example, and the exact elements affected.
+3. Lists failures grouped by severity (high, medium, low), each with the WCAG criterion, a plain-language "why it matters", a "how to fix" with an example, and the exact elements affected.
 4. Lists items that need manual review (things axe cannot decide on its own).
 5. Exports the report as **PDF**, **HTML**, or raw **JSON**.
+
+Severity maps axe-core's four impact levels to three: **High** = critical + serious, **Medium** = moderate, **Low** = minor. The original axe impact is kept as `axeImpact` in the JSON.
 
 Automated testing finds roughly a third to half of real accessibility problems, so the report says so and points people to manual checks.
 

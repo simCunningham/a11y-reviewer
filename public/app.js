@@ -1,6 +1,6 @@
 (() => {
-  const IMPACTS = ['critical', 'serious', 'moderate', 'minor'];
-  const LABEL = { critical: 'Critical', serious: 'Serious', moderate: 'Moderate', minor: 'Minor' };
+  const SEVERITIES = ['high', 'medium', 'low'];
+  const LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
 
   const form = document.getElementById('scan-form');
   const input = document.getElementById('url');
@@ -38,8 +38,8 @@
       </li>`).join('');
     const more = rule.totalNodes > rule.nodes.length ? `<p class="meta">Showing ${rule.nodes.length} of ${rule.totalNodes}. The JSON download has the same list.</p>` : '';
     return `
-      <section class="rule impact-${esc(rule.impact)}" data-impact="${esc(rule.impact)}" aria-labelledby="${kind}-${esc(rule.id)}">
-        <h3 id="${kind}-${esc(rule.id)}"><span class="badge">${esc(LABEL[rule.impact] || rule.impact)}</span> ${esc(rule.help)}</h3>
+      <section class="rule sev-${esc(rule.severity)}" aria-labelledby="${kind}-${esc(rule.id)}">
+        <h3 id="${kind}-${esc(rule.id)}"><span class="badge">${esc(LABEL[rule.severity] || rule.severity)}</span> ${esc(rule.help)}</h3>
         <p class="meta">Rule <code>${esc(rule.id)}</code>${wcag}${level} · ${rule.totalNodes} element${rule.totalNodes === 1 ? '' : 's'}</p>
         <dl>
           <dt>Why it matters</dt><dd>${esc(rule.fix.why)}</dd>
@@ -64,7 +64,7 @@
     document.getElementById('cards').innerHTML = [
       card(s.rulesFailed, 'rules failed'),
       card(s.elementsAffected, 'elements affected'),
-      ...IMPACTS.map((i) => card(s[i], i, i)),
+      ...SEVERITIES.map((sev) => card(s[sev], `${sev} severity`, sev)),
       card(s.rulesPassed, 'rules passed'),
       card(s.needsReview, 'need manual review'),
     ].join('');
@@ -77,10 +77,10 @@
     if (!data.violations.length) {
       v.innerHTML = '<h2>Failures</h2><p class="empty">No automated failures were found. Check the manual review items and test by hand too.</p>';
     } else {
-      v.innerHTML = IMPACTS.map((impact) => {
-        const rules = data.violations.filter((r) => r.impact === impact);
+      v.innerHTML = SEVERITIES.map((sev) => {
+        const rules = data.violations.filter((r) => r.severity === sev);
         if (!rules.length) return '';
-        return `<div class="group" data-impact="${impact}"><h2>${LABEL[impact]} (${rules.length})</h2>${rules.map((r) => ruleHtml(r, 'v')).join('')}</div>`;
+        return `<div class="group" data-severity="${sev}"><h2>${LABEL[sev]} severity (${rules.length})</h2>${rules.map((r) => ruleHtml(r, 'v')).join('')}</div>`;
       }).join('');
     }
 
@@ -98,7 +98,7 @@
 
   filters.addEventListener('change', () => {
     const shown = new Set([...filters.querySelectorAll('input:checked')].map((cb) => cb.value));
-    document.querySelectorAll('#violations .group').forEach((g) => { g.hidden = !shown.has(g.dataset.impact); });
+    document.querySelectorAll('#violations .group').forEach((g) => { g.hidden = !shown.has(g.dataset.severity); });
   });
 
   form.addEventListener('submit', async (e) => {

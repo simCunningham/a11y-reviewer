@@ -1,14 +1,14 @@
 :root {
   --fg: #1a1a1a; --muted: #555; --bg: #fff; --surface: #f7f7f8; --line: #cfcfd4;
   --accent: #0050b3; --accent-fg: #fff; --focus: #ffbf47; --error: #a4001d;
-  --critical: #a4001d; --serious: #b34700; --moderate: #7a5d00; --minor: #33577a;
+  --high: #a4001d; --medium: #8a4b00; --low: #33577a;
   --code: #f1f1f3;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --fg: #ececf1; --muted: #b4b4bd; --bg: #16161a; --surface: #1f1f25; --line: #3a3a44;
     --accent: #6aa8ff; --accent-fg: #0b0b0d; --error: #ff8a8a;
-    --critical: #ff7b8a; --serious: #ffa25c; --moderate: #e6c24a; --minor: #8fb8e6;
+    --high: #ff7b8a; --medium: #ffa25c; --low: #8fb8e6;
     --code: #26262e;
   }
 }
@@ -58,10 +58,9 @@ button[disabled] { opacity: .6; cursor: progress; }
 .rule { border: 1px solid var(--line); border-left-width: 6px; border-radius: 6px; padding: 16px; margin: 16px 0; }
 .rule h3 { font-size: 1.1rem; margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
 .badge { color: var(--bg); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 2px 8px; border-radius: 4px; }
-.impact-critical { border-left-color: var(--critical); } .impact-critical .badge { background: var(--critical); }
-.impact-serious { border-left-color: var(--serious); } .impact-serious .badge { background: var(--serious); }
-.impact-moderate { border-left-color: var(--moderate); } .impact-moderate .badge { background: var(--moderate); }
-.impact-minor { border-left-color: var(--minor); } .impact-minor .badge { background: var(--minor); }
+.sev-high { border-left-color: var(--high); } .sev-high .badge { background: var(--high); }
+.sev-medium { border-left-color: var(--medium); } .sev-medium .badge { background: var(--medium); }
+.sev-low { border-left-color: var(--low); } .sev-low .badge { background: var(--low); }
 dl { margin: 8px 0; } dt { font-weight: 700; margin-top: 8px; } dd { margin: 2px 0 0; }
 pre { background: var(--code); padding: 8px 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; font-size: .85rem; margin: 6px 0; }
 code { font-family: ui-monospace, Menlo, Consolas, monospace; }

@@ -28,8 +28,9 @@ test('scans a page and exports reports', async (t) => {
     assert.ok(ids.includes(id), `expected ${id} in ${ids.join(', ')}`);
   }
   // Sorted most severe first, with plain-language fixes attached.
-  const order = ['critical', 'serious', 'moderate', 'minor'];
-  const ranks = data.violations.map((v) => order.indexOf(v.impact));
+  const order = ['high', 'medium', 'low'];
+  const ranks = data.violations.map((v) => order.indexOf(v.severity));
+  assert.deepEqual(Object.keys(data.summary).slice(0, 3), order);
   assert.deepEqual(ranks, [...ranks].sort((a, b) => a - b));
   const img = data.violations.find((v) => v.id === 'image-alt');
   assert.match(img.fix.fix, /alt attribute/);

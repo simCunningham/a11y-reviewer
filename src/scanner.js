@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 const axeSource = require('axe-core').source;
 const axeVersion = require('axe-core/package.json').version;
-const { getFix, IMPACT_ORDER } = require('./fixes');
+const { getFix, IMPACT_ORDER, SEVERITY_ORDER, SEVERITY_FOR_IMPACT } = require('./fixes');
 const { isHostAllowed } = require('./urlGuard');
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -50,7 +50,8 @@ function wcagLevel(tags) {
 function simplifyRule(rule) {
   return {
     id: rule.id,
-    impact: rule.impact || 'minor',
+    severity: SEVERITY_FOR_IMPACT[rule.impact] || 'low',
+    axeImpact: rule.impact || 'minor',
     help: rule.help,
     description: rule.description,
     helpUrl: rule.helpUrl,
@@ -67,7 +68,11 @@ function simplifyRule(rule) {
 }
 
 function byImpact(a, b) {
-  return IMPACT_ORDER.indexOf(a.impact) - IMPACT_ORDER.indexOf(b.impact) || b.totalNodes - a.totalNodes;
+  return (
+    SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity) ||
+    IMPACT_ORDER.indexOf(a.axeImpact) - IMPACT_ORDER.indexOf(b.axeImpact) ||
+    b.totalNodes - a.totalNodes
+  );
 }
 
 async function scan(url, { bestPractices = false } = {}) {
@@ -106,8 +111,8 @@ async function scan(url, { bestPractices = false } = {}) {
 
     const violations = results.violations.map(simplifyRule).sort(byImpact);
     const needsReview = results.incomplete.map(simplifyRule).sort(byImpact);
-    const summary = { critical: 0, serious: 0, moderate: 0, minor: 0 };
-    for (const v of violations) summary[v.impact] += 1;
+    const summary = { high: 0, medium: 0, low: 0 };
+    for (const v of violations) summary[v.severity] += 1;
 
     return {
       url,

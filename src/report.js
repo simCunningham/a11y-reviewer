@@ -1,6 +1,6 @@
 // Renders a scan result as a standalone, printable HTML report.
 
-const IMPACT_LABEL = { critical: 'Critical', serious: 'Serious', moderate: 'Moderate', minor: 'Minor' };
+const SEVERITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
 
 function esc(value) {
   return String(value ?? '')
@@ -27,9 +27,9 @@ function ruleSection(rule, kind) {
     : '';
   const wcag = rule.wcag.length ? `WCAG ${rule.wcag.join(', ')}` : '';
   return `
-    <section class="rule impact-${esc(rule.impact)}" aria-labelledby="${kind}-${esc(rule.id)}">
+    <section class="rule sev-${esc(rule.severity)}" aria-labelledby="${kind}-${esc(rule.id)}">
       <h3 id="${kind}-${esc(rule.id)}">
-        <span class="badge">${esc(IMPACT_LABEL[rule.impact] || rule.impact)}</span>
+        <span class="badge">${esc(SEVERITY_LABEL[rule.severity] || rule.severity)}</span>
         ${esc(rule.help)}
       </h3>
       <p class="meta">Rule <code>${esc(rule.id)}</code>${wcag ? ` · ${esc(wcag)}` : ''}${rule.level ? ` · Level ${esc(rule.level)}` : ''} · ${rule.totalNodes} element${rule.totalNodes === 1 ? '' : 's'}</p>
@@ -50,11 +50,11 @@ function ruleSection(rule, kind) {
 function renderReport(result, { expandAll = false } = {}) {
   const s = result.summary;
   const date = new Date(result.scannedAt);
-  const groups = ['critical', 'serious', 'moderate', 'minor']
-    .map((impact) => {
-      const rules = result.violations.filter((v) => v.impact === impact);
+  const groups = ['high', 'medium', 'low']
+    .map((sev) => {
+      const rules = result.violations.filter((v) => v.severity === sev);
       if (!rules.length) return '';
-      return `<h2 id="h-${impact}">${IMPACT_LABEL[impact]} (${rules.length})</h2>${rules.map((r) => ruleSection(r, 'v')).join('')}`;
+      return `<h2 id="h-${sev}">${SEVERITY_LABEL[sev]} severity (${rules.length})</h2>${rules.map((r) => ruleSection(r, 'v')).join('')}`;
     })
     .join('');
 
@@ -66,7 +66,7 @@ function renderReport(result, { expandAll = false } = {}) {
 <title>Accessibility report: ${esc(result.title || result.url)}</title>
 <style>
   :root { --fg:#1a1a1a; --muted:#555; --bg:#fff; --line:#d0d0d0; --code:#f4f4f4;
-          --critical:#a4001d; --serious:#b34700; --moderate:#7a5d00; --minor:#33577a; }
+          --high:#a4001d; --medium:#8a4b00; --low:#33577a; }
   * { box-sizing: border-box; }
   body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); margin: 0; }
   main { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
@@ -79,10 +79,9 @@ function renderReport(result, { expandAll = false } = {}) {
   .cards li { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
   .cards .n { display: block; font-size: 1.8rem; font-weight: 700; }
   .rule { border: 1px solid var(--line); border-left-width: 6px; border-radius: 6px; padding: 16px; margin: 16px 0; break-inside: avoid-page; }
-  .impact-critical { border-left-color: var(--critical); } .impact-critical .badge { background: var(--critical); }
-  .impact-serious { border-left-color: var(--serious); } .impact-serious .badge { background: var(--serious); }
-  .impact-moderate { border-left-color: var(--moderate); } .impact-moderate .badge { background: var(--moderate); }
-  .impact-minor { border-left-color: var(--minor); } .impact-minor .badge { background: var(--minor); }
+  .sev-high { border-left-color: var(--high); } .sev-high .badge { background: var(--high); }
+  .sev-medium { border-left-color: var(--medium); } .sev-medium .badge { background: var(--medium); }
+  .sev-low { border-left-color: var(--low); } .sev-low .badge { background: var(--low); }
   .badge { color: #fff; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 2px 8px; border-radius: 4px; }
   dl { margin: 8px 0; } dt { font-weight: 700; margin-top: 8px; } dd { margin: 2px 0 0; }
   pre { background: var(--code); padding: 8px 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; font-size: .85rem; margin: 6px 0; }
@@ -105,13 +104,13 @@ function renderReport(result, { expandAll = false } = {}) {
   <ul class="cards">
     <li><span class="n">${s.rulesFailed}</span> rules failed</li>
     <li><span class="n">${s.elementsAffected}</span> elements affected</li>
-    <li><span class="n" style="color:var(--critical)">${s.critical}</span> critical</li>
-    <li><span class="n" style="color:var(--serious)">${s.serious}</span> serious</li>
-    <li><span class="n" style="color:var(--moderate)">${s.moderate}</span> moderate</li>
-    <li><span class="n" style="color:var(--minor)">${s.minor}</span> minor</li>
+    <li><span class="n" style="color:var(--high)">${s.high}</span> high severity</li>
+    <li><span class="n" style="color:var(--medium)">${s.medium}</span> medium severity</li>
+    <li><span class="n" style="color:var(--low)">${s.low}</span> low severity</li>
     <li><span class="n">${s.rulesPassed}</span> rules passed</li>
     <li><span class="n">${s.needsReview}</span> need manual review</li>
   </ul>
+  <p class="meta">Severity: High covers axe's critical and serious issues, which block or seriously hinder some users. Medium covers moderate issues. Low covers minor issues.</p>
   <div class="callout">
     <strong>About this report.</strong> Automated testing finds roughly a third to half of accessibility problems.
     A clean result does not mean the page is fully accessible. Also check keyboard-only navigation, screen reader
