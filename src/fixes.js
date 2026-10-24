@@ -258,9 +258,9 @@ const FIXES = {
 
 const IMPACT_ORDER = ['critical', 'serious', 'moderate', 'minor'];
 
-// axe reports four impact levels; the app shows three severities.
-const SEVERITY_ORDER = ['high', 'medium', 'low'];
-const SEVERITY_FOR_IMPACT = { critical: 'high', serious: 'high', moderate: 'medium', minor: 'low' };
+// axe's impact names, shown to people as Critical, High, Medium and Low.
+const SEVERITY_ORDER = ['critical', 'high', 'medium', 'low'];
+const SEVERITY_FOR_IMPACT = { critical: 'critical', serious: 'high', moderate: 'medium', minor: 'low' };
 
 function getFix(violation) {
   const known = FIXES[violation.id];

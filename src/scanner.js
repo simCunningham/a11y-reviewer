@@ -111,7 +111,7 @@ async function scan(url, { bestPractices = false } = {}) {
 
     const violations = results.violations.map(simplifyRule).sort(byImpact);
     const needsReview = results.incomplete.map(simplifyRule).sort(byImpact);
-    const summary = { high: 0, medium: 0, low: 0 };
+    const summary = { critical: 0, high: 0, medium: 0, low: 0 };
     for (const v of violations) summary[v.severity] += 1;
 
     return {

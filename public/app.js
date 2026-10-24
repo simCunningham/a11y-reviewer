@@ -1,6 +1,6 @@
 (() => {
-  const SEVERITIES = ['high', 'medium', 'low'];
-  const LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
+  const SEVERITIES = ['critical', 'high', 'medium', 'low'];
+  const LABEL = { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low' };
 
   const form = document.getElementById('scan-form');
   const input = document.getElementById('url');
@@ -64,7 +64,7 @@
     document.getElementById('cards').innerHTML = [
       card(s.rulesFailed, 'rules failed'),
       card(s.elementsAffected, 'elements affected'),
-      ...SEVERITIES.map((sev) => card(s[sev], `${sev} severity`, sev)),
+      ...SEVERITIES.map((sev) => card(s[sev], sev, sev)),
       card(s.rulesPassed, 'rules passed'),
       card(s.needsReview, 'need manual review'),
     ].join('');
@@ -80,7 +80,7 @@
       v.innerHTML = SEVERITIES.map((sev) => {
         const rules = data.violations.filter((r) => r.severity === sev);
         if (!rules.length) return '';
-        return `<div class="group" data-severity="${sev}"><h2>${LABEL[sev]} severity (${rules.length})</h2>${rules.map((r) => ruleHtml(r, 'v')).join('')}</div>`;
+        return `<div class="group" data-severity="${sev}"><h2>${LABEL[sev]} (${rules.length})</h2>${rules.map((r) => ruleHtml(r, 'v')).join('')}</div>`;
       }).join('');
     }
 

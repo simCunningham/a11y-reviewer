@@ -1,6 +1,6 @@
 // Renders a scan result as a standalone, printable HTML report.
 
-const SEVERITY_LABEL = { high: 'High', medium: 'Medium', low: 'Low' };
+const SEVERITY_LABEL = { critical: 'Critical', high: 'High', medium: 'Medium', low: 'Low' };
 
 function esc(value) {
   return String(value ?? '')
@@ -50,11 +50,11 @@ function ruleSection(rule, kind) {
 function renderReport(result, { expandAll = false } = {}) {
   const s = result.summary;
   const date = new Date(result.scannedAt);
-  const groups = ['high', 'medium', 'low']
+  const groups = ['critical', 'high', 'medium', 'low']
     .map((sev) => {
       const rules = result.violations.filter((v) => v.severity === sev);
       if (!rules.length) return '';
-      return `<h2 id="h-${sev}">${SEVERITY_LABEL[sev]} severity (${rules.length})</h2>${rules.map((r) => ruleSection(r, 'v')).join('')}`;
+      return `<h2 id="h-${sev}">${SEVERITY_LABEL[sev]} (${rules.length})</h2>${rules.map((r) => ruleSection(r, 'v')).join('')}`;
     })
     .join('');
 
@@ -66,7 +66,7 @@ function renderReport(result, { expandAll = false } = {}) {
 <title>Accessibility report: ${esc(result.title || result.url)}</title>
 <style>
   :root { --fg:#1a1a1a; --muted:#555; --bg:#fff; --line:#d0d0d0; --code:#f4f4f4;
-          --high:#a4001d; --medium:#8a4b00; --low:#33577a; }
+          --critical:#a4001d; --high:#b34700; --medium:#7a5d00; --low:#33577a; }
   * { box-sizing: border-box; }
   body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); margin: 0; }
   main { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
@@ -79,6 +79,7 @@ function renderReport(result, { expandAll = false } = {}) {
   .cards li { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
   .cards .n { display: block; font-size: 1.8rem; font-weight: 700; }
   .rule { border: 1px solid var(--line); border-left-width: 6px; border-radius: 6px; padding: 16px; margin: 16px 0; break-inside: avoid-page; }
+  .sev-critical { border-left-color: var(--critical); } .sev-critical .badge { background: var(--critical); }
   .sev-high { border-left-color: var(--high); } .sev-high .badge { background: var(--high); }
   .sev-medium { border-left-color: var(--medium); } .sev-medium .badge { background: var(--medium); }
   .sev-low { border-left-color: var(--low); } .sev-low .badge { background: var(--low); }
@@ -104,13 +105,14 @@ function renderReport(result, { expandAll = false } = {}) {
   <ul class="cards">
     <li><span class="n">${s.rulesFailed}</span> rules failed</li>
     <li><span class="n">${s.elementsAffected}</span> elements affected</li>
-    <li><span class="n" style="color:var(--high)">${s.high}</span> high severity</li>
-    <li><span class="n" style="color:var(--medium)">${s.medium}</span> medium severity</li>
-    <li><span class="n" style="color:var(--low)">${s.low}</span> low severity</li>
+    <li><span class="n" style="color:var(--critical)">${s.critical}</span> critical</li>
+    <li><span class="n" style="color:var(--high)">${s.high}</span> high</li>
+    <li><span class="n" style="color:var(--medium)">${s.medium}</span> medium</li>
+    <li><span class="n" style="color:var(--low)">${s.low}</span> low</li>
     <li><span class="n">${s.rulesPassed}</span> rules passed</li>
     <li><span class="n">${s.needsReview}</span> need manual review</li>
   </ul>
-  <p class="meta">Severity: High covers axe's critical and serious issues, which block or seriously hinder some users. Medium covers moderate issues. Low covers minor issues.</p>
+  <p class="meta">Severity: Critical issues block some users entirely. High issues seriously hinder them. Medium issues cause some difficulty. Low issues are minor annoyances.</p>
   <div class="callout">
     <strong>About this report.</strong> Automated testing finds roughly a third to half of accessibility problems.
     A clean result does not mean the page is fully accessible. Also check keyboard-only navigation, screen reader
