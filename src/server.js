@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const express = require('express');
@@ -28,7 +29,7 @@ function slug(result) {
 function createApp() {
   const app = express();
   app.use(express.json({ limit: '10kb' }));
-  app.use(express.static(path.join(__dirname, '..', 'public')));
+  app.use(express.static(path.join(__dirname, '..', 'dist')));
 
   app.post('/api/scan', async (req, res) => {
     let url;
@@ -98,6 +99,9 @@ function createApp() {
 }
 
 if (require.main === module) {
+  if (!fs.existsSync(path.join(__dirname, '..', 'dist', 'index.html'))) {
+    console.warn('No built front end found in dist/. Run `npm run build` (or `npm start`, which builds first).');
+  }
   const server = createApp().listen(PORT, () => {
     console.log(`Accessibility checker running at http://localhost:${PORT}`);
   });

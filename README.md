@@ -15,14 +15,23 @@ Automated testing finds roughly a third to half of real accessibility problems, 
 
 ## Run it
 
-Requires Node 18+.
+Requires Node 20.19+.
 
 ```bash
 npm install          # also downloads Chromium for Playwright
-npm start            # http://localhost:3000
+npm start            # builds the React front end, then serves everything at http://localhost:3000
 ```
 
 If the browser download was skipped, run `npx playwright install chromium`.
+
+### Developing the front end
+
+Run the API and the Vite dev server (with hot reload) in two terminals:
+
+```bash
+npm run dev:server   # Express API on :3000, restarts on change
+npm run dev          # React app on :5173, proxies /api to :3000
+```
 
 ### Settings
 
@@ -51,7 +60,7 @@ src/scanner.js   Playwright + axe-core scan, result shaping
 src/fixes.js     Plain-language explanations and fixes per axe rule
 src/report.js    Standalone HTML report (also rendered to PDF)
 src/urlGuard.js  URL validation and private-address blocking
-public/          The front end (plain HTML, CSS and JS)
+client/          The React front end (Vite); builds to dist/, which Express serves
 test/            node:test tests, including a deliberately broken fixture page
 ```
 
