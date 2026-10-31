@@ -4,17 +4,26 @@
   "description": "Scan a web page against WCAG 2.2 with axe-core, list failures by severity with plain-language fixes, and export a report.",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "build": "vite build",
+    "start": "npm run build && node src/server.js",
+    "dev": "vite",
+    "dev:server": "node --watch src/server.js",
     "test": "node --test test/*.test.js",
     "postinstall": "playwright install chromium || echo 'Run: npx playwright install chromium'"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   },
   "license": "MIT",
   "dependencies": {
     "axe-core": "4.14.0",
     "express": "5.3.0",
     "playwright": "1.63.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.1.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vite": "8.3.5"
   }
 }
